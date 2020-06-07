@@ -1,5 +1,3 @@
-// import { Phaser } from "./phaser"
-
 let config = {
     width: 800,
     height: 600,
@@ -15,8 +13,8 @@ let game = new Phaser.Game(config)
 function preload() {
     // console.log("in preload")
     //load an image
-    this.load.image('background', "back.jpg")
-    this.load.image('wheel', "wheel.png")
+    this.load.image('background', "assets/back.jpg")
+    this.load.image('wheel', "assets/wheel.png")
     // this.load.image('background', "back.jpg")
 
 }
