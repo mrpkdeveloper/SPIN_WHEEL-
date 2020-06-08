@@ -1,5 +1,5 @@
 let config = {
-    width: 1250,
+    width: 1270,
     height: 550,
     scene: {
         preload: preload,
@@ -15,6 +15,10 @@ let prizes_config = {
 
 var game = new Phaser.Game(config)
 var button;
+// spin_btn.onclick = function () {
+//     console.log("button clicked")
+//     spinwheel_new()
+// }
 
 function preload() {
     // console.log("in preload")
@@ -24,6 +28,7 @@ function preload() {
     this.load.image('pin', "assets/pin.png")
     this.load.image('stand', "assets/stand.png")
     this.load.image('button', "assets/button.png")
+    this.load.audio('music', "assets/sound.ogg")
 
 }
 function create() {
@@ -52,7 +57,7 @@ function create() {
     this.wheel.setScale(0.25)
 
     //button
-    this.button = this.add.sprite(W / 2 + 500, H / 2, 'button').setInteractive();
+    this.button = this.add.sprite(W / 2 + 500, H / 2, 'button').setInteractive({ useHandCursor: true });
     this.button.setScale(0.50)
     this.button.on('pointerover', function (event) { /* Do something when the mouse enters */
         console.log("over")
@@ -61,7 +66,6 @@ function create() {
         console.log("out")
     });
     this.button.on('pointerdown', spinwheel, this); // Start game on click.
-
     //for text diplayed
     font_style = {
         font: "bold 30px Arial",
@@ -69,6 +73,9 @@ function create() {
         color: "red",
     }
     this.game_text = this.add.text(10, 10, "Welcome to Spin & Win", font_style);
+
+    //sound
+    this.sound = this.sound.add("music")
 
     //event listener for mouse click
     // this.input.on("pointerdown", spinwheel, this);
@@ -79,11 +86,15 @@ function create() {
 //     // this.wheel.angle += 1;
 // }
 
-function up() {
-    console.log('button up', arguments);
-}
 function spinwheel() {
-
+    var musicconfig = {
+        mute: false,
+        volume: 1,
+        rate: 1,
+        loop: false,
+        delay: 0
+    }
+    this.sound.play(musicconfig);
     console.log("You clicked the mouse");
     console.log("Start spinning");
     //this.game_text.setText("You clicked the mouse!");
@@ -105,7 +116,7 @@ function spinwheel() {
         callbackScope: this,
         onComplete: function () {
             this.game_text.setText("You won " + prizes_config.prize_names[idx]);
-            this.button.setInteractive();
+            this.button.setInteractive({ useHandCursor: true });
         },
     });
 
