@@ -4,7 +4,6 @@ let config = {
     scene: {
         preload: preload,
         create: create,
-        // update: update
     }
 }
 
@@ -14,14 +13,8 @@ let prizes_config = {
 }
 
 var game = new Phaser.Game(config)
-var button;
-// spin_btn.onclick = function () {
-//     console.log("button clicked")
-//     spinwheel_new()
-// }
 
 function preload() {
-    // console.log("in preload")
     //load an image
     this.load.image('background', "assets/back.jpg")
     this.load.image('wheel', "assets/wheel.png")
@@ -41,7 +34,6 @@ function create() {
     let background = this.add.sprite(0, 0, 'background');
     background.setPosition(W / 2, H / 2);
     background.setScale(0.20);
-    // background.depth = 1;
 
     //lets create the stand
     let stand = this.add.sprite(W / 2, H / 2 + 250, 'stand');
@@ -58,19 +50,21 @@ function create() {
 
 
     //button
-    this.button = this.add.sprite(W / 2 + 500, H / 2, 'button').setInteractive({ useHandCursor: true });
-    this.button.setScale(0.50)
+    this.button = this.add.sprite(W / 2 + 400, H / 2, 'button').setInteractive({ useHandCursor: true });
+    this.button.setScale(0.65)
     this.button.on('pointerover', function (event) { /* Do something when the mouse enters */
         console.log("over")
-        this.clearTint();
+        this.setTint(999999);
     });
-    this.button.on('pointerout', function (event) { /* Do something when the mouse exits. */
+    this.button.on('pointerout', function (pointer) { /* Do something when the mouse exits. */
         console.log("out")
         this.clearTint();
 
     });
     this.button.on('pointerdown', spinwheel, this); // Start game on click.
+
     //for text diplayed
+
     font_style = {
         font: "bold 30px Arial",
         align: "center",
@@ -80,17 +74,10 @@ function create() {
 
     //sound
     this.sound = this.sound.add("music")
-
-    //event listener for mouse click
-    // this.input.on("pointerdown", spinwheel, this);
-
 }
-// function update() {
-//     console.log("in update")
-//     // this.wheel.angle += 1;
-// }
 
 function spinwheel() {
+
     var musicconfig = {
         mute: false,
         volume: 1,
@@ -99,9 +86,6 @@ function spinwheel() {
         delay: 0
     }
     this.sound.play(musicconfig);
-    console.log("You clicked the mouse");
-    console.log("Start spinning");
-    //this.game_text.setText("You clicked the mouse!");
 
     let rounds = Phaser.Math.Between(2, 4);
     let degrees = Phaser.Math.Between(0, 11) * 30;
@@ -120,6 +104,7 @@ function spinwheel() {
         callbackScope: this,
         onComplete: function () {
             this.game_text.setText("You won " + prizes_config.prize_names[idx]);
+            this.button.clearTint();
             this.button.setInteractive({ useHandCursor: true });
         },
     });
