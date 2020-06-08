@@ -4,7 +4,7 @@ let config = {
     scene: {
         preload: preload,
         create: create,
-        update: update
+        // update: update
     }
 }
 
@@ -13,7 +13,8 @@ let prizes_config = {
     prize_names: ["3000 Credits", "35% Off", "Hard Luck", "70% OFF", "Swagpack", "100% OFF", "Netflix", "50% Off", "Amazon Voucher", "2 Extra Spin", "CB Tshirt", "CB Book"]
 }
 
-let game = new Phaser.Game(config)
+var game = new Phaser.Game(config)
+var button;
 
 function preload() {
     // console.log("in preload")
@@ -22,6 +23,7 @@ function preload() {
     this.load.image('wheel', "assets/wheel.png")
     this.load.image('pin', "assets/pin.png")
     this.load.image('stand', "assets/stand.png")
+    this.load.image('button', "assets/button.png")
 
 }
 function create() {
@@ -49,6 +51,18 @@ function create() {
     this.wheel = this.add.sprite(W / 2, H / 2, "wheel")
     this.wheel.setScale(0.25)
 
+    //button
+    this.button = this.add.sprite(W / 2 + 500, H / 2, 'button').setInteractive();
+    this.button.setScale(0.50)
+    this.button.on('pointerover', function (event) { /* Do something when the mouse enters */
+        console.log("over")
+    });
+    this.button.on('pointerout', function (event) { /* Do something when the mouse exits. */
+        console.log("out")
+    });
+    this.button.on('pointerdown', spinwheel, this); // Start game on click.
+
+    //for text diplayed
     font_style = {
         font: "bold 30px Arial",
         align: "center",
@@ -57,15 +71,17 @@ function create() {
     this.game_text = this.add.text(10, 10, "Welcome to Spin & Win", font_style);
 
     //event listener for mouse click
-    this.input.on("pointerdown", spinwheel, this);
+    // this.input.on("pointerdown", spinwheel, this);
 
 }
-function update() {
-    console.log("in update")
-    // this.wheel.angle += 1;
+// function update() {
+//     console.log("in update")
+//     // this.wheel.angle += 1;
+// }
+
+function up() {
+    console.log('button up', arguments);
 }
-
-
 function spinwheel() {
 
     console.log("You clicked the mouse");
@@ -79,7 +95,7 @@ function spinwheel() {
     console.log(total_angle);
 
     let idx = prizes_config.count - 1 - Math.floor(degrees / (360 / prizes_config.count));
-
+    this.button.removeInteractive();
 
     tween = this.tweens.add({
         targets: this.wheel,
@@ -88,7 +104,8 @@ function spinwheel() {
         duration: 6000,
         callbackScope: this,
         onComplete: function () {
-            this.game_text.setText("You won something " + prizes_config.prize_names[idx]);
+            this.game_text.setText("You won " + prizes_config.prize_names[idx]);
+            this.button.setInteractive();
         },
     });
 
