@@ -22,7 +22,10 @@ function preload() {
     this.load.image('stand', "assets/stand.png")
     this.load.image('button', "assets/button.png")
     this.load.audio('music', "assets/music.ogg")
+    this.load.audio('coin', "assets/coin.ogg")
+    this.load.audio('result', "assets/world.wav")
     this.load.image('play_again', "assets/play_again2.png")
+    // this.load.image('logo', "assets/spin-n-win-logo.png")
 
 }
 function create() {
@@ -51,40 +54,62 @@ function create() {
     this.wheel.setScale(0.25)
 
 
+    //sound
+    this.soundwheel = this.sound.add("music")
+    this.coin = this.sound.add("coin")
+    this.result = this.sound.add("result")
+
     //button
     this.button = this.add.sprite(W / 2 - 290, H / 2, 'button').setInteractive({ useHandCursor: true });
     this.button.setScale(1.5)
-    this.button.on('pointerover', function (event) { /* Do something when the mouse enters */
-        console.log("over")
-        this.setTint(999999);
-    });
+    this.button.on('pointerover', pointerover, this);
+
+    function pointerover() {
+        // console.log("over")
+        this.button.setTint(99999);
+        this.coin.play();
+    }
+
     this.button.on('pointerout', function (pointer) { /* Do something when the mouse exits. */
-        console.log("out")
+        // console.log("out")
         this.clearTint();
 
     });
     this.button.on('pointerdown', spinwheel, this); // Start game on click.
-
+    tween = this.tweens.add({
+        targets: this.button,
+        x: W / 2 - 270,
+        // ease: "Cubic.easeOut",
+        // duration: 1000,
+        ease: 'Power1',
+        duration: 1000,
+        yoyo: true,
+        callbackScope: this,
+        onComplete: function () { console.log("complete") }
+    });
 
     //for text diplayed
     font_style = {
         font: "bold 45px Arial",
         align: "center",
-        color: "red",
+        color: "white",
         padding: 5,
         // backgroundColor: '#ff00ff'
     }
 
     font_style2 = {
-        font: "bold 45px Arial",
+        font: "bold 60px Arial",
+        anchor: 0.5,
         align: "center",
-        color: "black",
+        color: "white",
         padding: 8,
-        backgroundColor: 'white'
+        // backgroundColor: 'white',
+        height: 10,
+        width: 50
     }
 
     this.game_text = this.add.text(150, 20, "Welcome to Spin & Win", font_style);
-    this.result_text = this.add.text(W / 4, H / 2 - 100, "", font_style2)
+    this.result_text = this.add.text(W / 2, H / 2 - 120, "", font_style2).setOrigin(0.5)
     this.result_text.setVisible(false)
 
     //play again btn
@@ -93,8 +118,6 @@ function create() {
     this.play_again.setVisible(false)
 
 
-    //sound
-    this.sound = this.sound.add("music")
 }
 
 
@@ -114,7 +137,7 @@ function spinwheel() {
         loop: false,
         delay: 0
     }
-    this.sound.play(musicconfig);
+    this.soundwheel.play(musicconfig);
 
     let rounds = Phaser.Math.Between(2, 4);
     let degrees = Phaser.Math.Between(0, 11) * 30;
@@ -133,11 +156,14 @@ function spinwheel() {
         duration: 6000,
         callbackScope: this,
         onComplete: function () {
+            this.result.play()
             this.result_text.setText("You won " + prizes_config.prize_names[idx]);
             this.result_text.setVisible(true)
+            this.result_text.setScale(1.5)
             this.play_again.setVisible(true)
             this.wheel.setTint(999999);
             this.button.setTint(999999);
+            this.game_text.setTint(999999);
             this.play_again.on('pointerover', function (event) { /* Do something when the mouse enters */
                 console.log("over")
                 this.setTint(999999);
@@ -149,7 +175,7 @@ function spinwheel() {
             });
             this.play_again.on('pointerdown', after_spin, this);
 
-        },
+        }
     });
 
 }
@@ -161,5 +187,6 @@ function after_spin() {
     this.play_again.setVisible(false)
     this.button.clearTint();
     this.wheel.clearTint();
+    this.game_text.clearTint();
     this.button.setInteractive({ useHandCursor: true });
 }
