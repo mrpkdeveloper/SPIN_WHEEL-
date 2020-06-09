@@ -36,22 +36,22 @@ function create() {
     background.setScale(0.20);
 
     //lets create the stand
-    let stand = this.add.sprite(W / 2, H / 2 + 250, 'stand');
+    let stand = this.add.sprite(W / 2 + 240, H / 2 + 250, 'stand');
     stand.setScale(0.25);
 
     //lets create a pin
-    let pin = this.add.sprite(W / 2, H / 2 - 250, "pin");
+    let pin = this.add.sprite(W / 2 + 240, H / 2 - 250, "pin");
     pin.setScale(0.25);
     pin.depth = 1;
 
     //wheel
-    this.wheel = this.add.sprite(W / 2, H / 2, "wheel")
+    this.wheel = this.add.sprite(W / 2 + 240, H / 2, "wheel")
     this.wheel.setScale(0.25)
 
 
     //button
-    this.button = this.add.sprite(W / 2 + 400, H / 2, 'button').setInteractive({ useHandCursor: true });
-    this.button.setScale(0.65)
+    this.button = this.add.sprite(W / 2 - 290, H / 2 + 150, 'button').setInteractive({ useHandCursor: true });
+    this.button.setScale(1)
     this.button.on('pointerover', function (event) { /* Do something when the mouse enters */
         console.log("over")
         this.setTint(999999);
@@ -63,21 +63,25 @@ function create() {
     });
     this.button.on('pointerdown', spinwheel, this); // Start game on click.
 
-    //for text diplayed
 
+    //for text diplayed
     font_style = {
-        font: "bold 30px Arial",
+        font: "bold 45px Arial",
         align: "center",
         color: "red",
+        padding: 5,
+        // backgroundColor: '#ff00ff'
     }
-    this.game_text = this.add.text(10, 10, "Welcome to Spin & Win", font_style);
+    this.game_text = this.add.text(150, 20, "Welcome to Spin & Win", font_style);
+    this.result_text = this.add.text(150, 180, "", font_style);
+
 
     //sound
     this.sound = this.sound.add("music")
 }
 
 function spinwheel() {
-
+    this.result_text.setText("");
     var musicconfig = {
         mute: false,
         volume: 1,
@@ -103,7 +107,7 @@ function spinwheel() {
         duration: 6000,
         callbackScope: this,
         onComplete: function () {
-            this.game_text.setText("You won " + prizes_config.prize_names[idx]);
+            this.result_text.setText("You won " + prizes_config.prize_names[idx]);
             this.button.clearTint();
             this.button.setInteractive({ useHandCursor: true });
         },
