@@ -22,6 +22,7 @@ function preload() {
     this.load.image('stand', "assets/stand.png")
     this.load.image('button', "assets/button.png")
     this.load.audio('music', "assets/music.ogg")
+    this.load.image('play_again', "assets/play_again2.png")
 
 }
 function create() {
@@ -31,9 +32,10 @@ function create() {
 
     //this statement creates image on page
     //background
-    let background = this.add.sprite(0, 0, 'background');
-    background.setPosition(W / 2, H / 2);
-    background.setScale(0.20);
+    this.background = this.add.sprite(0, 0, 'background');
+    this.background.setPosition(W / 2, H / 2);
+    this.background.setScale(0.20);
+    this.background.setTint(999999);
 
     //lets create the stand
     let stand = this.add.sprite(W / 2 + 240, H / 2 + 250, 'stand');
@@ -50,8 +52,8 @@ function create() {
 
 
     //button
-    this.button = this.add.sprite(W / 2 - 290, H / 2 + 150, 'button').setInteractive({ useHandCursor: true });
-    this.button.setScale(1)
+    this.button = this.add.sprite(W / 2 - 290, H / 2, 'button').setInteractive({ useHandCursor: true });
+    this.button.setScale(1.5)
     this.button.on('pointerover', function (event) { /* Do something when the mouse enters */
         console.log("over")
         this.setTint(999999);
@@ -72,15 +74,38 @@ function create() {
         padding: 5,
         // backgroundColor: '#ff00ff'
     }
+
+    font_style2 = {
+        font: "bold 45px Arial",
+        align: "center",
+        color: "black",
+        padding: 8,
+        backgroundColor: 'white'
+    }
+
     this.game_text = this.add.text(150, 20, "Welcome to Spin & Win", font_style);
-    this.result_text = this.add.text(150, 180, "", font_style);
+    this.result_text = this.add.text(W / 4, H / 2 - 100, "", font_style2)
+    this.result_text.setVisible(false)
+
+    //play again btn
+    this.play_again = this.add.sprite(W / 2, H / 2 + 100, 'play_again').setInteractive({ useHandCursor: true })
+    this.play_again.setScale(1)
+    this.play_again.setVisible(false)
 
 
     //sound
     this.sound = this.sound.add("music")
 }
 
+
+
+
+
+
+
+
 function spinwheel() {
+    this.result_text.setVisible(false)
     this.result_text.setText("");
     var musicconfig = {
         mute: false,
@@ -98,6 +123,7 @@ function spinwheel() {
     console.log(total_angle);
 
     let idx = prizes_config.count - 1 - Math.floor(degrees / (360 / prizes_config.count));
+    // this.button.setVisible(false);
     this.button.removeInteractive();
 
     tween = this.tweens.add({
@@ -108,9 +134,32 @@ function spinwheel() {
         callbackScope: this,
         onComplete: function () {
             this.result_text.setText("You won " + prizes_config.prize_names[idx]);
-            this.button.clearTint();
-            this.button.setInteractive({ useHandCursor: true });
+            this.result_text.setVisible(true)
+            this.play_again.setVisible(true)
+            this.wheel.setTint(999999);
+            this.button.setTint(999999);
+            this.play_again.on('pointerover', function (event) { /* Do something when the mouse enters */
+                console.log("over")
+                this.setTint(999999);
+            });
+            this.play_again.on('pointerout', function (pointer) { /* Do something when the mouse exits. */
+                console.log("out")
+                this.clearTint();
+
+            });
+            this.play_again.on('pointerdown', after_spin, this);
+
         },
     });
 
+}
+
+
+function after_spin() {
+    console.log("button clicked")
+    this.result_text.setVisible(false)
+    this.play_again.setVisible(false)
+    this.button.clearTint();
+    this.wheel.clearTint();
+    this.button.setInteractive({ useHandCursor: true });
 }
